@@ -1,0 +1,98 @@
+{% extends "admin/base_site.html" %}
+{% load adminmedia admin_list i18n linklist_helpers  %}
+
+{% block stylesheet %}{% admin_media_prefix %}css/changelists.css{% endblock %}
+
+{% block bodyclass %}change-list{% endblock %}
+
+{% if not is_popup %}{% block breadcrumbs %}<div class="breadcrumbs"><a href="../../">{% trans "Home" %}</a> &rsaquo; {{ cl.opts.verbose_name_plural|capfirst|escape }}</div>{% endblock %}{% endif %}
+
+{% block coltype %}flex{% endblock %}
+
+{% block content %}
+
+<div id="content-main">
+{% block object-tools %}
+{% if has_add_permission %}
+<ul class="object-tools"><li><a href="add/{% if is_popup %}?_popup=1{% endif %}" class="addlink">{% blocktrans with cl.opts.verbose_name|escape as name %}Add {{ name }}{% endblocktrans %}</a></li></ul>
+{% endif %}
+{% endblock %}
+<div class="module{% if cl.has_filters %} filtered{% endif %}" id="changelist">
+{% block search %}{% search_form cl %}{% endblock %}
+{% block date_hierarchy %}{% date_hierarchy cl %}{% endblock %}
+
+{% block filters %}
+{% if cl.has_filters %}
+<div id="changelist-filter">
+<h2>{% trans 'Filter' %}</h2>
+{% for spec in cl.filter_specs %}
+   {% admin_list_filter cl spec %}
+{% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+            
+            
+{% regroup cl.result_list by link_set as link_list %}
+    
+{% for link_set in link_list %}
+
+<h2>{{link_set.grouper}}</h2>
+
+<table cellspacing="0">
+<thead>
+<tr>
+<th scope="col" width="40%">
+Title
+</th>
+<th scope="col" width="40%">
+URL
+</th>
+<th scope="col" width="10%">
+Is live
+</th>
+<th scope="col" width="10%">
+Position
+</th>
+</tr>
+</thead>
+<tbody>
+    
+    {% for result in link_set.list|dictsort:"position" %}
+    
+    <tr class="{% cycle 'row1' 'row2' %}">
+        <th>
+        <a href="{{result.id}}/">{{result.title}}</a>
+        </th>
+        <td>{{result.url}}</td>
+        <td>
+            {% if result.is_live %}
+            <img src="{% linklist_media_prefix %}img/icon-yes.gif"/>
+            {% else %}
+            <img src="{% linklist_media_prefix %}img/icon-no.gif"/>            
+            {% endif %}
+        </td>
+        <td class="divide last">
+            <form action="." method="POST">
+            <input type="hidden" name="link_id" value="{{ result.id }}"/>
+                {% if not forloop.first %}
+                <input type="image" name="action" value="Up" src=" {% linklist_media_prefix %}img/selector-up.gif" width="16" height="16"/>
+                {% endif %}
+                {% if not forloop.last %}
+                <input type="image" name="action" value="Down" src="{% linklist_media_prefix %}img/selector-down.gif" width="16" height="16"/>
+                {% endif %}
+        </form></td>
+    </tr>
+    
+    {% endfor %}
+    
+    </tbody>
+    </table>
+    
+{% endfor %}
+
+
+{% block pagination %}{% pagination cl %}{% endblock %}
+</div>
+</div>
+{% endblock %}

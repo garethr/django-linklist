@@ -1,0 +1,7 @@
+{% if links %}
+<ul>
+{% for link in links %}
+    <li class="{% if forloop.first %}first {% endif %}{% if forloop.last %}last {% endif %}{% if link.html_class %}{{link.html_class}}{% endif %}"><a href="{{link.url}}">{{link.title}}</a></li>
+{% endfor %}
+</ul>
+{% endif %}
