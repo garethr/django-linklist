@@ -4,17 +4,17 @@ h2. Instalation
 
 First install the code somewhere on your python path. The packaged setup.py file will let you do this via setuptools is that's your thing.
 
-pre. python setup.py install
+<pre>python setup.py install</pre>
 
 Next add linklist to your INSTALLED_APPS in settings.py for your project.
 
-INSTALLED_APPS += (
+<pre>INSTALLED_APPS += (
     'linklist',
-)
+)</pre>
 
 Next we need to specify a few paths so the application can find templates and assets used for the admin. We'll do this dynamically so as to avoid having to make local modifications.
 
-pre. import os
+<pre>import os
 import linklist
 # we calculate the file location of the images used for the admin
 LINKLIST_ROOT = os.path.dirname(os.path.realpath(linklist.__file__))
@@ -23,17 +23,17 @@ TEMPLATE_DIRS += (
     os.path.join(LINKLIST_ROOT, 'templates'),
 )
 LINKLIST_MEDIA_URL = '/assets/'
-LINKLIST_MEDIA_ROOT = os.path.join(LINKLIST_ROOT, 'assets')
+LINKLIST_MEDIA_ROOT = os.path.join(LINKLIST_ROOT, 'assets')</pre>
 
 You'll also want to add a couple of things to urls.py. These are for the admin only and not needed on the front end.
 
-pre. from django.conf import settings
+<pre>from django.conf import settings</pre>
 
 And add an extra rule to your urlpatterns:
 
-pre. (r'^assets/(?P<path>.*)$', 'django.views.static.serve', {
+<pre>(r'^assets/(?P<path>.*)$', 'django.views.static.serve', {
     'document_root': settings.LINKLIST_MEDIA_ROOT
-})
+})</pre>
 
 h2. Licence
 
